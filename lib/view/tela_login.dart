@@ -1,25 +1,28 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/mensagem.dart';
 
 void main() {
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MusicNow',
-      home: TelaPrincipal(),
+      home: TelaLogin(),
     ),
   );
 }
 
 // TELA PRINCIPAL
 
-class TelaPrincipal extends StatefulWidget {
-  const TelaPrincipal({Key? key}) : super(key: key);
+class TelaLogin extends StatefulWidget {
+  const TelaLogin({Key? key}) : super(key: key);
 
   @override
-  State<TelaPrincipal> createState() => _TelaPrincipalState();
+  State<TelaLogin> createState() => _TelaLoginState();
 }
 
-class _TelaPrincipalState extends State<TelaPrincipal> {
+class _TelaLoginState extends State<TelaLogin> {
   var txtNome = TextEditingController();
   var txtSenha = TextEditingController();
   var f1 = GlobalKey<FormState>();
@@ -80,7 +83,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
       controller: variavel,
       keyboardType: TextInputType.text,
       obscureText: false,
-      maxLength: 10,
+      maxLength: 25,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
@@ -110,7 +113,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
       controller: variavel,
       keyboardType: TextInputType.text,
       obscureText: true,
-      maxLength: 10,
+      maxLength: 25,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
@@ -142,7 +145,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
       height: 50,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, 't3');
+          login(txtNome.text, txtSenha.text);
+          //Navigator.pushNamed(context, 't3');
         },
         child: Text(
           rotulo,
@@ -172,5 +176,30 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         ),
       ),
     );
+  }
+
+  void login(email, senha) {
+    FirebaseAuth.instance
+    .signInWithEmailAndPassword(email: email, password: senha)
+    .then((res){
+      //TUDO CERTO
+      sucesso(context,'Entrando ...');
+      Navigator.pushReplacementNamed(context, 't3');
+    }).catchError((e){
+      switch(e.code){
+        case 'invalid-email':
+          erro(context,'Email inválido.');
+          break;
+        case 'user-not-found':
+          erro(context,'Usuário inválido.');
+          break;
+        case 'wrong-password':
+          erro(context,'Senha incorreta.');
+          break;
+        default:
+          erro(context,e.code.toString());
+      }
+    });
+
   }
 }

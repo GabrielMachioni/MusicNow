@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/mensagem.dart';
 
 class TelaInicial extends StatefulWidget {
   const TelaInicial({Key? key}) : super(key: key);
@@ -20,8 +24,8 @@ class _TelaInicialState extends State<TelaInicial> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountEmail: Text("email.do@usuário"),
-              accountName: Text("nome"),
+              accountEmail: Text(FirebaseAuth.instance.currentUser!.email.toString()),
+              accountName: Text(""),
               currentAccountPicture: CircleAvatar(
                 child: Text("foto"),
               ),
@@ -52,6 +56,14 @@ class _TelaInicialState extends State<TelaInicial> {
               title: Text("Sobre"),
               onTap: () {
                 Navigator.pushNamed(context, 't4');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text("Sair"),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacementNamed(context, 't1');
               },
             ),
           ],

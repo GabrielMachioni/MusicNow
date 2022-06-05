@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/mensagem.dart';
 
 class TelaCadastro extends StatefulWidget {
   const TelaCadastro({Key? key}) : super(key: key);
@@ -11,6 +15,8 @@ class _TelaCadastroState extends State<TelaCadastro> {
   var txtNome = TextEditingController();
   var txtEmail = TextEditingController();
   var txtSenha = TextEditingController();
+  var txtTelefone = TextEditingController();
+  var txtCPF = TextEditingController();
   var f2 = GlobalKey<FormState>();
 
   @override
@@ -53,6 +59,10 @@ class _TelaCadastroState extends State<TelaCadastro> {
                   campoTextoEmail('Email', txtEmail,),
                   const SizedBox(height: 10),
                   campoTextoSenha('Senha', txtSenha,),
+                  const SizedBox(height: 10),
+                  campoTextoTelefone('Telefone', txtTelefone,),
+                  const SizedBox(height: 10),
+                  campoTextoCPF('CPF', txtCPF,),
                   const SizedBox(height: 20),
                   botaoCadastrar('Cadastrar')
                 ],
@@ -70,7 +80,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
       controller: variavel,
       keyboardType: TextInputType.text,
       obscureText: false,
-      maxLength: 10,
+      maxLength: 25,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
@@ -84,7 +94,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
             padding: const EdgeInsets.only(top: 0), // add padding to adjust icon
             child: const Icon(Icons.person, color: Color.fromARGB(124, 88, 99, 89),),
           ),
-        hintText: 'Digite seu email',
+        hintText: 'Digite seu nome completo',
         hintStyle: const TextStyle(
           fontSize: 22,
           color: Color.fromARGB(126, 180, 198, 181),
@@ -101,7 +111,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
       controller: variavel,
       keyboardType: TextInputType.text,
       obscureText: false,
-      maxLength: 10,
+      maxLength: 25,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
@@ -131,7 +141,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
       controller: variavel,
       keyboardType: TextInputType.text,
       obscureText: true,
-      maxLength: 10,
+      maxLength: 25,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
@@ -156,6 +166,64 @@ class _TelaCadastroState extends State<TelaCadastro> {
     );
   }
 
+  campoTextoTelefone(rotulo, variavel) {
+    return TextFormField(
+      controller: variavel,
+      keyboardType: TextInputType.text,
+      maxLength: 25,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        labelText: rotulo,
+        labelStyle: const TextStyle(
+          fontSize: 22,
+          color: Color.fromARGB(124, 88, 99, 89),
+        ),
+        prefixIcon: Padding(
+            padding: const EdgeInsets.only(top: 0), // add padding to adjust icon
+            child: const Icon(Icons.smartphone, color: Color.fromARGB(124, 88, 99, 89),),
+          ),
+        hintText: 'Digite seu telefone',
+        hintStyle: const TextStyle(
+          fontSize: 22,
+          color: Color.fromARGB(126, 180, 198, 181),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+      ),
+    );
+  }
+
+  campoTextoCPF(rotulo, variavel) {
+    return TextFormField(
+      controller: variavel,
+      keyboardType: TextInputType.text,
+      maxLength: 25,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        labelText: rotulo,
+        labelStyle: const TextStyle(
+          fontSize: 22,
+          color: Color.fromARGB(124, 88, 99, 89),
+        ),
+        prefixIcon: Padding(
+            padding: const EdgeInsets.only(top: 0), // add padding to adjust icon
+            child: const Icon(Icons.perm_identity, color: Color.fromARGB(124, 88, 99, 89),),
+          ),
+        hintText: 'Digite seu CPF',
+        hintStyle: const TextStyle(
+          fontSize: 22,
+          color: Color.fromARGB(126, 180, 198, 181),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+      ),
+    );
+  }
+
   // BOTÃO
   botaoCadastrar(rotulo) {
     return SizedBox(
@@ -163,7 +231,8 @@ class _TelaCadastroState extends State<TelaCadastro> {
       height: 50,
       child: ElevatedButton(
         onPressed: () {
-        Navigator.pop(context);
+          criarConta(txtNome.text, txtEmail.text, txtSenha.text, txtTelefone.text, txtCPF.text);
+          Navigator.pop(context);
         },
         child: Text(
           rotulo,
@@ -175,5 +244,39 @@ class _TelaCadastroState extends State<TelaCadastro> {
       ),
     );
   }
-}
 
+  void criarConta(nome, email, senha, telefone, cpf) {
+
+    FirebaseAuth.instance
+    .createUserWithEmailAndPassword(email: email, password: senha)
+    .then((res){
+
+      FirebaseFirestore.instance
+        .collection('usuarios')
+        .add(
+          {
+            "uid" : res.user!.uid.toString(),
+            "nome" : nome,
+            "email": email,
+            "telefone": telefone,
+            "CPF": cpf
+          }
+        );
+
+      sucesso(context,'Cadastrado com sucesso!');
+      Navigator.pop(context);
+    }).catchError((e){
+      switch(e.code){
+        case 'invalid-email':
+          erro(context,'Email inválido.');
+          break;
+        case 'email-already-in-use':
+         erro(context,'Email já cadastrado.');
+          break;
+        default:
+          erro(context,e.code.toString());
+      }
+    });
+
+  }
+}

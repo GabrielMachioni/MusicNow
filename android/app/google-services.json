@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "581817076401",
+    "project_id": "fatec-music-now",
+    "storage_bucket": "fatec-music-now.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581817076401:android:0ec9147a9c916db839f090",
+        "android_client_info": {
+          "package_name": "com.example.musicnow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581817076401-smbvmj76vk1v6qvahhdbg35mulknbnng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMhjj0dHXZ1sI_qPjKmiMkiPEu25FZ4ck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581817076401-smbvmj76vk1v6qvahhdbg35mulknbnng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
